@@ -2,7 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
-
 (async () => {
 
   // Init the Express application
@@ -31,6 +30,27 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   /**************************************************************************** */
 
   //! END @TODO1
+
+  
+  //RESTFUL ENDPOINT GET /filteredimage?image_url={{URL}} endpoint to filter an image from a public url
+  app.get("/filteredimage/", async (req, res) => {
+    const imageUrl = req.query.image_url;
+
+    //Check if image url is present
+    if (!imageUrl) {
+      return res.status(400).send({
+        message: "Image url is required"
+      });
+    }
+
+    try {
+      console;
+      const filteredImagePath = await filterImageFromURL(imageUrl);
+      res.sendFile(filteredImagePath, () => deleteLocalFiles([filteredImagePath]));
+    } catch (error) {
+      res.sendStatus(422).send("Unable to process image");
+    }
+  });
   
   // Root Endpoint
   // Displays a simple message to the user
