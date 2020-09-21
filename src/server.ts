@@ -1,6 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
+import Jimp from 'jimp';
+//import validUrl from 'valid-url';
 
 (async () => {
 
@@ -33,8 +35,8 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   
   //RESTFUL ENDPOINT GET /filteredimage?image_url={{URL}} endpoint to filter an image from a public url
-  app.get("/filteredimage/", async (req, res) => {
-    const imageUrl = req.query.image_url;
+  app.get("/filteredimage/", async (req: express.Request, res:express.Response) => {
+    const imageUrl: string = req.query.image_url;
 
     //Check if image url is present
     if (!imageUrl) {
@@ -45,7 +47,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
     try {
       console;
-      const filteredImagePath = await filterImageFromURL(imageUrl);
+      const filteredImagePath: string = await filterImageFromURL(imageUrl);
       res.sendFile(filteredImagePath, () => deleteLocalFiles([filteredImagePath]));
     } catch (error) {
       res.sendStatus(422).send("Unable to process image");
