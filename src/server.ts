@@ -2,7 +2,14 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 import Jimp from 'jimp';
-//import validUrl from 'valid-url';
+import validUrl from 'valid-url';
+import {
+  ReasonPhrases,
+  StatusCodes,
+  getReasonPhrase,
+  getStatusCode,
+} from 'http-status-codes';
+
 
 (async () => {
 
@@ -38,25 +45,31 @@ import Jimp from 'jimp';
   app.get("/filteredimage/", async (req: express.Request, res:express.Response) => {
     const imageUrl: string = req.query.image_url;
 
-    //Check if image url is present
+    //Validation to check if image url is present
     if (!imageUrl) {
-      return res.status(400).send({
+      return res.status(StatusCodes.BAD_REQUEST).send({
         message: "Image url is required"
       });
     }
+
+    //Validation to check if query param is a valid url
+    if(!validUrl.isUri(imageUrl)){
+      return res.status(StatusCodes.UNSUPPORTED_MEDIA_TYPE).send({error:'Invalid url'});
+    }
+
 
     try {
       console;
       const filteredImagePath: string = await filterImageFromURL(imageUrl);
       res.sendFile(filteredImagePath, () => deleteLocalFiles([filteredImagePath]));
     } catch (error) {
-      res.sendStatus(422).send("Unable to process image");
+      res.sendStatus(StatusCodes.UNPROCESSABLE_ENTITY).send("Unable to process image");
     }
   });
   
   // Root Endpoint
   // Displays a simple message to the user
-  app.get( "/", async ( req, res ) => {
+  app.get( "/", async ( req: express.Request, res:express.Response) => {
     res.send("try GET /filteredimage?image_url={{}}")
   } );
   
