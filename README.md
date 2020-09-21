@@ -1,4 +1,5 @@
 Endpoint url for a running elastic beanstalk deployment:
+
 udagram-boyle-imagefilter-dev.eu-west-1.elasticbeanstalk.com
 
 # Udagram Image Filtering Microservice
