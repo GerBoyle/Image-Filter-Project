@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 import Jimp from 'jimp';
-//import validUrl from 'valid-url';
+import validUrl from 'valid-url';
 
 (async () => {
 
@@ -38,12 +38,18 @@ import Jimp from 'jimp';
   app.get("/filteredimage/", async (req: express.Request, res:express.Response) => {
     const imageUrl: string = req.query.image_url;
 
-    //Check if image url is present
+    //Validation to check if image url is present
     if (!imageUrl) {
       return res.status(400).send({
         message: "Image url is required"
       });
     }
+
+    //Validation to check if query param is a valid url
+    if(!validUrl.isUri(imageUrl)){
+      return res.status(415).send({error:'Invalid url'});
+    }
+
 
     try {
       console;
