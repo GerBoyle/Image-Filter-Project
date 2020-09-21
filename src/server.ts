@@ -3,6 +3,13 @@ import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 import Jimp from 'jimp';
 import validUrl from 'valid-url';
+import {
+  ReasonPhrases,
+  StatusCodes,
+  getReasonPhrase,
+  getStatusCode,
+} from 'http-status-codes';
+
 
 (async () => {
 
@@ -40,14 +47,14 @@ import validUrl from 'valid-url';
 
     //Validation to check if image url is present
     if (!imageUrl) {
-      return res.status(400).send({
+      return res.status(StatusCodes.BAD_REQUEST).send({
         message: "Image url is required"
       });
     }
 
     //Validation to check if query param is a valid url
     if(!validUrl.isUri(imageUrl)){
-      return res.status(415).send({error:'Invalid url'});
+      return res.status(StatusCodes.UNSUPPORTED_MEDIA_TYPE).send({error:'Invalid url'});
     }
 
 
@@ -56,7 +63,7 @@ import validUrl from 'valid-url';
       const filteredImagePath: string = await filterImageFromURL(imageUrl);
       res.sendFile(filteredImagePath, () => deleteLocalFiles([filteredImagePath]));
     } catch (error) {
-      res.sendStatus(422).send("Unable to process image");
+      res.sendStatus(StatusCodes.UNPROCESSABLE_ENTITY).send("Unable to process image");
     }
   });
   
